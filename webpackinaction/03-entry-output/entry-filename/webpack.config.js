@@ -7,7 +7,6 @@ module.exports = {
     app: "./index.js",
     detail: "./components/detail",
     list: "./components/list",
-    vender: ["react"]
   },
   output: {
     filename: "[name].js"
