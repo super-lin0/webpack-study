@@ -1,4 +1,3 @@
-import React from "react";
-import("./bar.js");
-
-document.write("foo");
+import(/* webpackChunkName: "bar..." */ "./bar.js").then(({ add }) => {
+  console.log(add(2, 3));
+});

@@ -9,13 +9,9 @@ module.exports = {
     bar: "./bar.js"
   },
   output: {
-    filename: "[name].js"
-  },
-  optimization: {
-    splitChunks: {
-      chunks: "all", // SplitChunks将会对所有的chunks生效（默认情况下，只对异步chunks生效）
-      name: "common"
-    }
+    filename: "[name].js",
+    publicPath: "/dist/",
+    chunkFilename: "[name].js" // 指定异步chunk的文件名
   },
   mode: "development",
   plugins: [new htmlPlugin({ title: path.basename(__dirname) })],

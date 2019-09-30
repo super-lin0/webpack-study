@@ -1,3 +1,3 @@
-import React from "react";
-
-document.write("bar");
+export function add(a, b) {
+  return a + b;
+}

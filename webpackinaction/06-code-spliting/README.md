@@ -72,3 +72,40 @@
 ### import()
 
 - 同 ES6 中的 import 语法不同，通过 import 函数加载的模块及其依赖会被异步地进行加载，并返回一个 Promise 对象。
+
+- ES6 中要求 import 必须出现在代码的顶层作用域，而 Webpack 的 import 函数则可以在任何我们希望的时候调用。
+
+```
+if(condition) {
+  import("./a.js").then(a => {
+    console.log(a)
+  })
+}
+```
+
+- 通过 JavaScript 在页面的 head 标签里插入一个 script 标签/dist/0.js
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/20190930110448.png)
+
+- 通过 output.chunkFilename 和特有注释来指定异步 chunk 的文件名
+
+```
+  output: {
+    filename: "[name].js",
+    publicPath: "/dist/",
+    chunkFilename: "[name].js" // 指定异步chunk的文件名
+  },
+
+  // 注释
+  import(/* webpackChunkName: "bar..." */ "./bar.js").then(({ add }) => {
+    console.log(add(2, 3));
+  });
+```
+
+最终结果：
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/%E5%9B%BE%E7%89%87.png)
+
+## 总结
+
+本章我们了解了 Webpack 代码分片的几种方式：合理的规划入口，使用 SplitChunks，以及资源异步加载。借助这些方法我们可以有效地缩小资源体积，同时更好的利用缓存，给用户更友好的体验。
