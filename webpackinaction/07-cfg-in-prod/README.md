@@ -152,4 +152,13 @@ hidden-source-map 意味着 Webpack 任然会产出完整的 map 文件，只不
 Webpack4 集成 terser
 
 **完整示例**
+
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/teser-plugin" >Terser plugin demo</a>
+
+### 压缩 CSS
+
+压缩 CSS 文件的前提是使用 extract-text-webpack-plugin 或 mini-css-extract-plugin 将样式提取出来，接着使用 optimize-css-assets-webpack-plugin 来进行压缩，这个插件本质上使用的是压缩器 cssnano。
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/minification-css" >CSS 压缩</a>
