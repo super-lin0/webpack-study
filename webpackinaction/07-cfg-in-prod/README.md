@@ -162,3 +162,44 @@ Webpack4 集成 terser
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/minification-css" >CSS 压缩</a>
+
+## 缓存
+
+缓存是指重复利用浏览器已经获取过的资源。合理地使用缓存是提升客户端性能的一个关键因素。具体的缓存策略由服务器来决定，浏览器会在资源国旗前一直使用本地缓存进行响应。
+
+### 资源 hash
+
+在每次打包的过程中对资源的内容计算一次 hash，并作为版本号存放在文件名中，如 bundle@c58f651eb71ab3bbcd01.js。
+
+- 用 chunkhash 来作为文件版本号，它会为每一个 chunk 单独计算一个 hash。
+
+```
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle@[chunkhash].js"
+  }
+}
+
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" >chunkhash</a>
+
+### 输出动态 HTML
+
+资源名改变之后意味着 HTML 中的引用路径的改变。每次更改后都要手动的去维护是很麻烦的，因此，最理想的情况是搭载打包结束后自动把最新的资源名同步过去。使用 html-webpack-plugin 可以帮我们做到这一点。
+
+```
+// webpack.config.js
+const htmlPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  plugins: [new htmlPlugin({ title: path.basename(__dirname) })],
+};
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" >动态输出 HTML</a>
