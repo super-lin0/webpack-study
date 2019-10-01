@@ -142,3 +142,14 @@ hidden-source-map 意味着 Webpack 任然会产出完整的 map 文件，只不
 **Ngnix 配置**
 
 正常打包出 source map，然后通过服务器的 Ngnix 配置（或其他类似工具）将 .map 文件只对固定白名单（比如公司内网）开放。
+
+## 资源压缩
+
+在将资源发不到线上环境钱，我们通常需要对代码进行压缩，即将多余的空格、换行及执行不到的代码，缩短变量名，在执行结果不变的前提下将代码替换为更短的形式。
+
+### 压缩 JavaScript
+
+Webpack4 集成 terser
+
+**完整示例**
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/teser-plugin" >Terser plugin demo</a>
