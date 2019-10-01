@@ -203,3 +203,21 @@ module.exports = {
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/07-cfg-in-prod/cache" >动态输出 HTML</a>
+
+## bundle 体积监控和分析
+
+VS Code 插件：Import Cost
+
+工具：webpack-bundle-analyzer
+
+自动化资源监控工具：bundlesize
+
+## 小结
+
+本文了解了在生产环境下需要进行的一些特殊的配置。
+
+开发环境中我们关注的可能是开发速度，而在生产环境中我们关注的则是输出的资源体积以及如何优化客户端缓存来缩短页面渲染时间。我们介绍了设置生产环境变量、压缩代码、监控资源体积等方法。缓存的控制住要依赖于从 chunk 内容生成 hash 作为版本号，并添加到资源文件名中，使资源更新后可以立即被客户端获取到。
+
+source map 对于追溯线上问题十分重要，但也存在安全隐患。通过一些特殊的 source map 配置以及第三方服务，我们可以兼顾两者。
+
+Webpack 4 提供了"mode: 'production'"的配置项，通过它可以节省很多生产环境下的特定代码，让配置文件更加的简洁
