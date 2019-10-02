@@ -367,3 +367,15 @@ module.exports = {
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/08-bundle-optimization/dll-plugin" >DLL Plugin</a>
+
+## tree shaking
+
+tree shaking 可以在打包过程中帮助我们检查工程中没有被引用过的模块，这部分代码将永远无法被执行到，因此也被称为“死代码”。Webpack 会对这部分代码进行标记，并在资源压缩时将它们从最终的 bundle 中去掉。
+
+**Note**
+
+tree shaking 本身只是为死代码添加标记，真正去除死代码是通过压缩工具来进行的。例如上一篇文章中我们提到过的 terser-webpack-plugin。在 webpack4 之后的版本中，将 mode 标记为 production 也可以达到相同的效果。
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/08-bundle-optimization/tree-shaking" >Tree shaking</a>
