@@ -379,3 +379,8 @@ tree shaking 本身只是为死代码添加标记，真正去除死代码是通�
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/08-bundle-optimization/tree-shaking" >Tree shaking</a>
+
+## 总结
+
+本文介绍了加快打包速度，减小资源体积的一些方法。对于一些对性能要求很高的项目来说这些方法可以起到一定的效果。
+最后需要说明的一点是，每一种优化策略都有其使用场景，并不是任何一个点放在一切项目中都有效。当我们发现性能的问题时，还是要根据现有的情况分析出瓶颈在哪里，然后对症下药。
