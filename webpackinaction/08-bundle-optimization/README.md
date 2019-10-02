@@ -213,6 +213,157 @@ exclude 和 include 同时生效时，exclude 的优先级更高
 
 ### noParse
 
+有些库我们是希望 Webpack 完全不要去进行解析的，即不希望应用任何 loader 规则，库的内部也不会有对其他模块的依赖，那么这时可以使用 noParse 进行忽略。
+
+```
+module.exports = {
+  module: {
+    // 忽略所有文件名中包含lodash的模块，这些模块仍然会被打包进资源文件，但Webpack不会对其进行任何解析
+    noParse: /lodash/,
+  }
+}
+```
+
+```
+module.exports = {
+  module: {
+    noParse: function(fullPath) {
+      // fullPath为绝对路径，如 /Users/me/app/webpack-no-parse/lib/lodash.js
+      return /lib/.test(fullPath);  // 忽略所有lib目录下的资源解析
+    }
+  }
+}
+```
+
 ### IgnorePlugin
 
+exclude 和 include 是确定 loader 的规则范围，noparse 是不去解析但仍会打包到 bundle 中。而 IgnorePlugin 则可以完全排除一些模块，被排除的模块即便被引用了也不会被打包进资源文件中。
+
+```
+plugins: [
+  new webpack.IgnorePlugin({
+    resourceMapExp: /^\.\/locale$/, //  匹配资源文件
+    contextRegExp: /moment$/  // 匹配检索目录
+  })
+]
+```
+
+一些由库产生的额外资源我们用不到但又无法去掉，因为引用的语句处于库文件内部。因此可以使用 IgnorePlugin 来排除一些库相关文件。例如，Moment.js 是一个日期时间处理相关的库，为了做本地化它会加载很多语言包，对于我们来说，一般不会用到其他地区的语言包，但他们会占用很多体积，这时就可以像上面这样用 IgnorePlugin 来去掉。
+
 ### Cache
+
+有些 loader 会有一个 cache 配置项，用来在编译代码后同时保存一份缓存，在执行下一次编译前会先检查源文件是否有变化，如果没有就直接采用缓存。
+
+## 动态链接库与 DLLPlugin
+
+**动态链接库**
+
+- 早期 windows 系统由于受限于当时计算机内存空间较小的问题而出现的一种内存优化方法
+
+- 当一段相同的子程序被多个程序调用时，为了减少内存消耗，可以将这段子程序存储为一个可执行文件，当多个程序调用时只在内存中生和使用成一个实例
+
+**DLLPlugin**
+
+DLLPlugin 借鉴动态链接库的思路，对于第三方库或者一些不常变化的模块，可以将它们预先编译和打包，然后在项目实际构建过程中直接取用即可。
+
+**DLLPlugin 和 Code Spliting 的区别**
+
+两者类似都可以用来提取公共模块，但本质上有区别
+
+- Code Spliting 设置一些特定的规则并在打包过程中根据这些规则提取模块
+
+- DLLPlugin 则是将 vendor 完全拆出来，有自己的一整套 Webpack 配置并独立打包，在实际工程构建时就不用再对它进行任何处理，直接取用即可。因此，理论上来讲，DLLPlugin 打包速度更快，但相应配置增加，资源管理复杂度增加。
+
+### vendor 配置
+
+首先需要为动态链接库单独创建一个 webpack 配置文件，比如文件名为 webpack.vendor.config.js
+
+```
+const path = require("path");
+const webpack = require("webpack");
+
+const dllAssetPath = path.join(__dirname, "dist");
+const dllLibraryName = "dllExample";
+
+module.exports = {
+  entry: ["react"], // 把哪些模块打包为vendor
+  output: {
+    path: dllAssetPath,
+    filename: "vendor.js",
+    library: dllLibraryName
+  },
+  plugins: [
+    new webpack.DllPlugin({
+      name: dllLibraryName, // 导出dll library的名字，需要与output.library值相对应
+      path: path.join(dllAssetPath, "manifest.json") // 资源清单的绝对路径，业务代码打包时会使用这个清单进行模块索引
+    })
+  ]
+};
+
+```
+
+### vendor 打包
+
+在 package.json 中新增配置,利用 dll 命令进行打包
+
+```
+  "scripts": {
+    "dll": "webpack --config webpack.vendor.config.js",
+  },
+
+```
+
+### 链接到业务代码
+
+使用 DLLReferencePlugin 插件将 vendor 链接到项目中。它起到一个索引和链接的作用。
+
+```
+// webpack.config.js
+module.exports = {
+  entry: {},
+  output: {},
+  plugins: [
+    new Webpack.DllReferencePlugin({
+      manifest: require(path.join(__dirname, "dll/manifest.json"))
+    })
+  ],
+};
+
+```
+
+### 潜在的问题
+
+当我们对 vendor 进行操作时，本来 vendor 中不应该受到影响的模块却改变了他们的 id。导致 vendor 变化需要用户重新下载左右模块资源
+
+**解决办法**
+
+在打包 vendor 时添加上 HashedModuleIdsPlugin
+
+```
+const path = require("path");
+const webpack = require("webpack");
+
+const dllAssetPath = path.join(__dirname, "dist");
+const dllLibraryName = "dllExample";
+
+module.exports = {
+  entry: ["react"], // 把哪些模块打包为vendor
+  output: {
+    path: dllAssetPath,
+    filename: "vendor.js",
+    library: dllLibraryName
+  },
+  plugins: [
+    new webpack.DllPlugin({
+      name: dllLibraryName, // 导出dll library的名字，需要与output.library值相对应
+      path: path.join(dllAssetPath, "manifest.json") // 资源清单的绝对路径，业务代码打包时会使用这个清单进行模块索引
+    }),
+    new webpack.HashedModuleIdsPlugin()
+  ]
+};
+
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/08-bundle-optimization/dll-plugin" >DLL Plugin</a>
