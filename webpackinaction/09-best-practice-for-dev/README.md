@@ -166,3 +166,39 @@ module.exports = smp.wrap({
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/speed-measure-webpack-plugin" >speed-measure-webpack-plugin</a>
+
+### size-plugin
+
+可以帮我们监控资源体积的变化，尽早发现问题
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003115149.png)
+
+**使用方法**
+
+```
+const path = require("path");
+const HtmlPlugin = require("html-webpack-plugin");
+const SizePlugin = require("size-plugin");
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    filename: "[name].js",
+    publicPath: "/dist/"
+  },
+  mode: "development",
+  devServer: {
+    port: 3000,
+    publicPath: "/dist/"
+  },
+  plugins: [
+    new HtmlPlugin({ title: path.basename(__dirname) }),
+    new SizePlugin()
+  ]
+};
+
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/size-plugin" >size-plugin</a>
