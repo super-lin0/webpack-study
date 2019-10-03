@@ -1,5 +1,7 @@
 # 生产环境配置
 
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003160517.png)
+
 ## 环境配置的封装
 
 ### 使用相同的配置文件
