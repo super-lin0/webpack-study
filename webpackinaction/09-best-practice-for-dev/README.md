@@ -129,3 +129,40 @@ module.exports = merge.smart(commonCfg, {
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/webpack-merge" >webpack-merge</a>
+
+### speed-measure-webpack-plugin
+
+可以分析出 Webpack 整个打包过程中在各个 loader 和 pulgin 上耗费的时间，这将有助于找出构建过程中的性能瓶颈。
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003114051.png)
+
+**使用方法**
+
+```
+// webpack.config.js
+
+const path = require("path");
+const HtmlPlugin = require("html-webpack-plugin");
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
+const smp = new SpeedMeasurePlugin();
+
+module.exports = smp.wrap({
+  entry: "./src/index.js",
+  output: {
+    filename: "[name].js",
+    publicPath: "/dist/"
+  },
+  mode: "development",
+  devServer: {
+    port: 3000,
+    publicPath: "/dist/"
+  },
+  plugins: [new HtmlPlugin({ title: path.basename(__dirname) })]
+});
+
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/speed-measure-webpack-plugin" >speed-measure-webpack-plugin</a>
