@@ -1,5 +1,7 @@
 # 代码分片(Code Splitting)
 
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003152823.png)
+
 - Webpack 提供了三种方式来进行代码分片
 
   - 入口配置：entry 入口使用多个入口文件；
