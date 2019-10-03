@@ -62,3 +62,70 @@ module.exports = {
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/webpack-dashboard" >webpack-dashboard</a>
+
+### webpack-merge
+
+顾名思义，我们猜测这个插件是用来合并 Webpack 配置的。先来看看用法
+
+```
+// webpack.common.config.js
+const path = require("path");
+const HtmlPlugin = require("html-webpack-plugin");
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    filename: "[name].js",
+    publicPath: "/dist/"
+  },
+  mode: "development",
+  devServer: {
+    port: 3000,
+    publicPath: "/dist/"
+  },
+  plugins: [new HtmlPlugin({ title: path.basename(__dirname) })],
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: "file-loader"
+      },
+      {
+        test: /.css$/,
+        use: ["style-loader", "css-loader"]
+      }
+    ]
+  }
+};
+
+```
+
+```
+// webpack.prod.config.js
+
+const merge = require("webpack-merge");
+const commonCfg = require("./webpack.common.config");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+module.exports = merge.smart(commonCfg, {
+  mode: "production",
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader"
+        })
+      }
+    ]
+  }
+});
+
+```
+
+是具体使用过程当中，我们会发现它在合并 module.rules 的过程中会以 test 属性作为标识符，当发现有相同项出现的时候会以后面的规则覆盖前面的规则。
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/webpack-merge" >webpack-merge</a>
