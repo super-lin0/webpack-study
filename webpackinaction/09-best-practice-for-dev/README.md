@@ -1,5 +1,7 @@
 # 开发环境调优
 
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003144918.png)
+
 Webpack 作为打包工具的重要使命之一就是提升效率。本文我们将介绍一些对日常开发有一定帮助的 Webpack 插件及调试方法。本文内容包括：
 
 - Webpack 周边插件介绍
