@@ -202,3 +202,140 @@ module.exports = {
 **完整示例**
 
 <a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/size-plugin" >size-plugin</a>
+
+## 模块热替换（HMR）
+
+Webpack 可以让代码在网页不刷新的前提下得到最新的改动，我们甚至不需要重新发起请求就能够看到更新后的效果，这就是模块热替换功能（Hot Module Replacement, HMR）。适合大型应用，HMR 可以在保留页面当前状态的前提下呈现出最新的改动，可以节省开发者大量的时间成本。
+
+### 开启 HMR
+
+- 项目必须基于 webpack-dev-server 或 webpack-dev-middle 进行开发的
+
+**手动调用 HMR API**
+
+```
+// webpack.config.js
+const path = require("path");
+const htmlPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+
+module.exports = {
+  plugins: [
+    //  将会为每个模块绑定一个module.hot对象，这个对象包含了 HMR 的 API
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  devServer: {
+    hot: true,
+    port: 3000
+  }
+};
+
+```
+
+```
+// index.js
+
+import {add} from "util.js";
+add(2, 3);
+
+if(module.hot) {
+  module.hot.accept();
+}
+
+```
+
+**借助第三方现成工具**
+
+```
+const path = require("path");
+const htmlPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        options: {
+          presets: ["react"],
+          plugins: ["react-hot-loader/babel"]
+        }
+      }
+    ]
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ],
+  devServer: {
+    hot: true,
+  }
+};
+
+```
+
+```
+// index.js
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import { hot } from "react-hot-loader";
+
+class App extends Component {
+  render() {
+    return <div>Hello World</div>;
+  }
+}
+
+const AppComponent = hot(module)(App);
+
+const render = () =>
+  ReactDOM.render(<AppComponent />, document.getElementById("app"));
+
+render();
+
+```
+
+**完整示例**
+
+<a href="https://github.com/super-lin0/webpack-study/tree/master/webpackinaction/09-best-pratice-for-dev/hmr-react" >hmr</a>
+
+### HMR 原理
+
+**定义**
+
+- 客户端： 浏览器
+
+- 服务器端：webpack-dev-server(WDS)
+
+**核心**
+
+HMR 的核心就是客户端从服务器端拉取更新后的资源（准确地说，HMR 拉取的不是整个资源文件，而是 chunk diff,即 chunk 需要更新的部分）
+
+**步骤**
+
+- 浏览器什么时候去拉取这些更新
+
+WDS 与浏览器之间维护了一个 websocket，当本地资源发生变化时 WDS 会向浏览器推送更新事件，并带上这次构建的 hash，让客户端与上一次资源进行对比。通过 hash 的比对可以防止冗余更新的出现。
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003142942.png)
+
+- 去拉取什么
+
+有了恰当的拉取资源的时机，下一步就是要知道拉取什么。这部分信息并没有包含在刚才的 websocket 中，因为我们刚才只是想知道这次构建的结果是不是和上一次一样。
+
+现在客户端已经知道了新的构建结果和当前的有了差别，就会向 WDS 发起一个请求来获取更改文件的列表，即哪些模块有了改动。返回的结果告诉客户端，需要更新的模块为 app，这样客户端就可以再借助这些信息继续向 WDS 获取该 chunk 的增量更新了。
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143511.png)
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143557.png)
+
+![](https://raw.githubusercontent.com/super-lin0/pic/master/img/20191003143738.png)
+
+- 获取到增量更新之后的处理
+
+  Webpack 提供了相关的 API 或使用 react-hot-loader 和 vue-loader 这样的第三方 API 来处理客户端获取到增量更新之后的事。
+
+## 小结
+
+本文介绍了一些 Webpack 周边插件，以及如何使用 HMR 以及 HMR 原理。
