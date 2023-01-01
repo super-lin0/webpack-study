@@ -7,7 +7,7 @@
     "build": "webpack --entry=./index.js --output-filename=bundle.js --mode=development"
   },
   "devDependencies": {
-    "webpack": "^4.39.3",
-    "webpack-cli": "^3.3.8"
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1"
   }
 }
